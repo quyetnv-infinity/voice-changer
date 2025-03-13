@@ -1,0 +1,11 @@
+${PODS_ROOT}/Target Support Files/Pods-Runner/Pods-Runner-frameworks.sh
+${BUILT_PRODUCTS_DIR}/flutter_sound_core/flutter_sound_core.framework
+${BUILT_PRODUCTS_DIR}/path_provider_foundation/path_provider_foundation.framework
+${PODS_XCFRAMEWORKS_BUILD_DIR}/ffmpeg-kit-ios-full-gpl/ffmpegkit.framework/ffmpegkit
+${PODS_XCFRAMEWORKS_BUILD_DIR}/ffmpeg-kit-ios-full-gpl/libavcodec.framework/libavcodec
+${PODS_XCFRAMEWORKS_BUILD_DIR}/ffmpeg-kit-ios-full-gpl/libavdevice.framework/libavdevice
+${PODS_XCFRAMEWORKS_BUILD_DIR}/ffmpeg-kit-ios-full-gpl/libavfilter.framework/libavfilter
+${PODS_XCFRAMEWORKS_BUILD_DIR}/ffmpeg-kit-ios-full-gpl/libavformat.framework/libavformat
+${PODS_XCFRAMEWORKS_BUILD_DIR}/ffmpeg-kit-ios-full-gpl/libavutil.framework/libavutil
+${PODS_XCFRAMEWORKS_BUILD_DIR}/ffmpeg-kit-ios-full-gpl/libswresample.framework/libswresample
+${PODS_XCFRAMEWORKS_BUILD_DIR}/ffmpeg-kit-ios-full-gpl/libswscale.framework/libswscale

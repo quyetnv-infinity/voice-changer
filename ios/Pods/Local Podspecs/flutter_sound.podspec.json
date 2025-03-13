@@ -1,0 +1,30 @@
+{
+  "name": "flutter_sound",
+  "version": "9.25.4",
+  "summary": "Flutter plugin that relates to sound like audio and recorder.",
+  "description": "Flutter plugin that relates to sound like audio and recorder.",
+  "homepage": "https://taudio-waa.thetatau.xyz/index.html",
+  "license": {
+    "file": "../LICENSE"
+  },
+  "authors": {
+    "Canardoux": "larpoux@gmail.com"
+  },
+  "source": {
+    "path": "."
+  },
+  "source_files": "Classes/**/*",
+  "public_header_files": "Classes/**/*.h",
+  "dependencies": {
+    "Flutter": [
+
+    ],
+    "flutter_sound_core": [
+      "9.25.4"
+    ]
+  },
+  "platforms": {
+    "ios": "12.0"
+  },
+  "static_framework": true
+}
