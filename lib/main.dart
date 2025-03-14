@@ -7,6 +7,8 @@ import 'package:flutter/services.dart';
 import 'package:flutter_sound/flutter_sound.dart';
 import 'package:path_provider/path_provider.dart';
 
+import 'constants.dart';
+
 void main() {
   runApp(const MyApp());
 }
@@ -63,6 +65,20 @@ class MyHomePage extends StatefulWidget {
 
 class _MyHomePageState extends State<MyHomePage> {
   final FlutterSoundPlayer _player = FlutterSoundPlayer();
+  String assetPath = "assets/audio/audio.mp3";
+  late String _outputPath;
+  bool _loading = false;
+
+  @override
+  void initState() {
+    // TODO: implement initState
+    super.initState();
+    getTemporaryDirectory().then((tempDir) {
+      setState(() {
+        _outputPath = '${tempDir.path}/changed_voice.mp3';
+      });
+    });
+  }
 
   Future<void> playAudio(String filePath) async {
     await _player.openPlayer();
@@ -78,13 +94,7 @@ class _MyHomePageState extends State<MyHomePage> {
     return tempPath;
   }
 
-  Future<String> changeVoiceToMale(String inputPath) async {
-    Directory tempDir = await getTemporaryDirectory();
-    String outputPath = '${tempDir.path}/male_voice.mp3';
-
-    // Bộ lọc âm thanh để tạo giọng nam
-    String command = '-y -i "$inputPath" -af "asetrate=44100*0.8,atempo=1.2" -acodec libmp3lame -qscale:a 2 "$outputPath"';
-
+  Future<String> changeVoice({required String command, required String fileName}) async {
     await FFmpegKit.execute(command).then((session) async {
       final logs = await session.getLogs();
       logs.forEach((log) {
@@ -93,239 +103,53 @@ class _MyHomePageState extends State<MyHomePage> {
       final returnCode = await session.getReturnCode();
 
       if (ReturnCode.isSuccess(returnCode)) {
-        print("✅ Voice changed successfully! File saved at: $outputPath");
+        print("✅ Voice created successfully! File saved at: $_outputPath");
       } else {
         print("❌ Error processing audio: ${await session.getFailStackTrace()}");
       }
     });
 
-    return outputPath;
+    return _outputPath;
   }
 
-  Future<String> changeVoiceToFemale(String inputPath) async {
-    Directory tempDir = await getTemporaryDirectory();
-    String outputPath = '${tempDir.path}/female_voice.mp3';
-
-    // FFmpeg command to create a female voice effect
-    String command = '''-y -i "$inputPath" -af "asetrate=44100*1.2,atempo=0.9,highpass=f=300,lowpass=f=3000" -acodec libmp3lame -qscale:a 2 "$outputPath"''';
-    // String command = '''-y -i "$inputPath" -af "asetrate=44100*1.15,atempo=0.95,highpass=f=250,lowpass=f=3200" -acodec libmp3lame -qscale:a 2 "$outputPath"''';
-
-    await FFmpegKit.execute(command).then((session) async {
-      final logs = await session.getLogs();
-      logs.forEach((log) {
-        print(log.getMessage());
-      });
-      final returnCode = await session.getReturnCode();
-
-      if (ReturnCode.isSuccess(returnCode)) {
-        print("✅ Female voice created successfully! File saved at: $outputPath");
-      } else {
-        print("❌ Error processing audio: ${await session.getFailStackTrace()}");
-      }
+  void processAndPlayVoice(SoundModel soundModel) async {
+    _player.stopPlayer();
+    setState(() {
+      _loading = true;
     });
-
-    return outputPath;
-  }
-
-  Future<String> changeVoiceToRobot(String inputPath) async {
-    Directory tempDir = await getTemporaryDirectory();
-    String outputPath = '${tempDir.path}/robot_voice.mp3';
-
-    // Lệnh FFmpeg để tạo giọng robot
-    String command = '''-y -i "$inputPath" -af "flanger,chorus=0.7:0.9:50:0.4:0.25:2,aecho=0.8:0.88:6:0.4" -acodec libmp3lame -qscale:a 2 "$outputPath"''';
-    // String command = '''-y -i "$inputPath" -af "flanger,atempo=0.9,lowpass=f=1000,aecho=0.8:0.88:6:0.4" -acodec libmp3lame -qscale:a 2 "$outputPath"''';
-    // String command = '''-y -i "$inputPath" -af "tremolo=5.0:0.5,atempo=0.9,lowpass=f=1000,aecho=0.8:0.88:6:0.4" -acodec libmp3lame -qscale:a 2 "$outputPath"''';
-
-    await FFmpegKit.execute(command).then((session) async {
-      final logs = await session.getLogs();
-      logs.forEach((log) {
-        print(log.getMessage());
-      });
-      final returnCode = await session.getReturnCode();
-
-      if (ReturnCode.isSuccess(returnCode)) {
-        print("✅ Voice changed successfully! File saved at: $outputPath");
-      } else {
-        print("❌ Error processing audio: ${await session.getFailStackTrace()}");
-      }
-    });
-
-    return outputPath;
-  }
-
-  Future<String> changeVoiceToBaby(String inputPath) async {
-    Directory tempDir = await getTemporaryDirectory();
-    String outputPath = '${tempDir.path}/baby_voice.mp3';
-
-    // FFmpeg command to create a baby voice effect
-    String command = '''-y -i "$inputPath" -af "asetrate=44100*1.3,atempo=0.8,highpass=f=300,lowpass=f=3000" -acodec libmp3lame -qscale:a 2 "$outputPath"''';
-
-    await FFmpegKit.execute(command).then((session) async {
-      final logs = await session.getLogs();
-      logs.forEach((log) {
-        print(log.getMessage());
-      });
-      final returnCode = await session.getReturnCode();
-
-      if (ReturnCode.isSuccess(returnCode)) {
-        print("✅ Baby voice created successfully! File saved at: $outputPath");
-      } else {
-        print("❌ Error processing audio: ${await session.getFailStackTrace()}");
-      }
-    });
-
-    return outputPath;
-  }
-
-  Future<String> changeVoiceToMonster(String inputPath) async {
-    Directory tempDir = await getTemporaryDirectory();
-    String outputPath = '${tempDir.path}/monster_voice.mp3';
-
-    // FFmpeg command to create a deep, scary monster voice
-    String command = '''-y -i "$inputPath" -af "asetrate=44100*0.5,atempo=1.5,lowpass=f=500,aecho=0.9:0.8:20:0.6" -acodec libmp3lame -qscale:a 2 "$outputPath"''';
-
-    await FFmpegKit.execute(command).then((session) async {
-      final logs = await session.getLogs();
-      logs.forEach((log) {
-        print(log.getMessage());
-      });
-      final returnCode = await session.getReturnCode();
-
-      if (ReturnCode.isSuccess(returnCode)) {
-        print("✅ Monster voice created successfully! File saved at: $outputPath");
-      } else {
-        print("❌ Error processing audio: ${await session.getFailStackTrace()}");
-      }
-    });
-
-    return outputPath;
-  }
-
-  Future<String> changeVoiceToDeath(String inputPath) async {
-    Directory tempDir = await getTemporaryDirectory();
-    String outputPath = '${tempDir.path}/death_voice.mp3';
-
-    // FFmpeg command to create a deep, eerie death voice
-    String command = '''-y -i "$inputPath" -af "asetrate=44100*0.6,atempo=1.2,lowpass=f=500,flanger,chorus=0.5:0.9:50:0.4:0.25:2,aecho=0.8:0.9:50:0.5" -acodec libmp3lame -qscale:a 2 "$outputPath"''';
-
-    await FFmpegKit.execute(command).then((session) async {
-      final logs = await session.getLogs();
-      logs.forEach((log) {
-        print(log.getMessage());
-      });
-      final returnCode = await session.getReturnCode();
-
-      if (ReturnCode.isSuccess(returnCode)) {
-        print("✅ Death voice created successfully! File saved at: $outputPath");
-      } else {
-        print("❌ Error processing audio: ${await session.getFailStackTrace()}");
-      }
-    });
-
-    return outputPath;
-  }
-
-  Future<String> changeVoiceToNervous(String inputPath) async {
-    Directory tempDir = await getTemporaryDirectory();
-    String outputPath = '${tempDir.path}/nervous_voice.mp3';
-
-    // FFmpeg command to create a nervous, shaky voice
-    String command = '''-y -i "$inputPath" -af "asetrate=44100*1.1,atempo=1.3,vibrato=f=8,afftdn=nr=20" -acodec libmp3lame -qscale:a 2 "$outputPath"''';
-
-    await FFmpegKit.execute(command).then((session) async {
-      final logs = await session.getLogs();
-      logs.forEach((log) {
-        print(log.getMessage());
-      });
-      final returnCode = await session.getReturnCode();
-
-      if (ReturnCode.isSuccess(returnCode)) {
-        print("✅ Nervous voice created successfully! File saved at: $outputPath");
-      } else {
-        print("❌ Error processing audio: ${await session.getFailStackTrace()}");
-      }
-    });
-
-    return outputPath;
-  }
-
-  Future<String> changeVoiceToCave(String inputPath) async {
-    Directory tempDir = await getTemporaryDirectory();
-    String outputPath = '${tempDir.path}/cave_voice.mp3';
-
-    // Corrected FFmpeg command without aconvolution
-    String command = '''-y -i "$inputPath" -af "aecho=0.8:0.88:60:0.4,lowpass=f=500" -acodec libmp3lame -qscale:a 2 "$outputPath"''';
-    // String command = '''-y -i "$inputPath" -af "aecho=0.9:0.8:100:0.3,lowpass=f=400" -acodec libmp3lame -qscale:a 2 "$outputPath"''';
-    // String command = '''-y -i "$inputPath" -af "aecho=0.7:0.9:30:0.5,lowpass=f=800" -acodec libmp3lame -qscale:a 2 "$outputPath"''';
-
-    await FFmpegKit.execute(command).then((session) async {
-      final logs = await session.getLogs();
-      logs.forEach((log) {
-        print(log.getMessage());
-      });
-      final returnCode = await session.getReturnCode();
-
-      if (ReturnCode.isSuccess(returnCode)) {
-        print("✅ Cave voice created successfully! File saved at: $outputPath");
-      } else {
-        print("❌ Error processing audio: ${await session.getFailStackTrace()}");
-      }
-    });
-
-    return outputPath;
-  }
-
-  Future<String> changeVoiceToSquirrel(String inputPath) async {
-    Directory tempDir = await getTemporaryDirectory();
-    String outputPath = '${tempDir.path}/squirrel_voice.mp3';
-
-    // FFmpeg command to create a squirrel voice effect
-    String command = '''-y -i "$inputPath" -af "asetrate=44100*1.5,atempo=1.25" -acodec libmp3lame -qscale:a 2 "$outputPath"''';
-
-    await FFmpegKit.execute(command).then((session) async {
-      final logs = await session.getLogs();
-      logs.forEach((log) {
-        print(log.getMessage());
-      });
-      final returnCode = await session.getReturnCode();
-
-      if (ReturnCode.isSuccess(returnCode)) {
-        print("✅ Squirrel voice created successfully! File saved at: $outputPath");
-      } else {
-        print("❌ Error processing audio: ${await session.getFailStackTrace()}");
-      }
-    });
-
-    return outputPath;
-  }
-
-
-  void processAndPlayVoice({required Function(String) voiceChangeFunc}) async {
-    String assetPath = "assets/audio/hello.mp3";
-
+    final stopwatch = Stopwatch()..start();
     // Copy file từ assets vào thư mục tạm
     String tempInputPath = await copyAssetToTemp(assetPath);
-
+    stopwatch.stop();
+    final command = await getSoundCommand(inputPath: tempInputPath, outputPath: _outputPath, soundModel: soundModel);
     // Chuyển đổi giọng nói
-    String tempOutputPath = await voiceChangeFunc(tempInputPath);
+    String tempOutputPath = await changeVoice(command: command, fileName: '${soundModel.name.toLowerCase()}.mp3');
 
     // Phát file âm thanh sau khi chỉnh sửa
     await playAudio(tempOutputPath);
+    print('Execution time: ${stopwatch.elapsedMilliseconds} ms');
+    setState(() {
+      _loading = false;
+    });
   }
 
   @override
   Widget build(BuildContext context) {
 
     List<SoundModel> sounds = [
-      SoundModel(name: "Male", voiceChangeFunc: changeVoiceToMale),
-      SoundModel(name: "Female", voiceChangeFunc: changeVoiceToFemale),
-      SoundModel(name: "Robot", voiceChangeFunc: changeVoiceToRobot),
-      SoundModel(name: "Baby", voiceChangeFunc: changeVoiceToBaby),
-      SoundModel(name: "Monster", voiceChangeFunc: changeVoiceToMonster),
-      SoundModel(name: "Death", voiceChangeFunc: changeVoiceToDeath),
-      SoundModel(name: "Cave", voiceChangeFunc: changeVoiceToCave),
-      SoundModel(name: "Nervous", voiceChangeFunc: changeVoiceToNervous),
-      SoundModel(name: "Squirrel", voiceChangeFunc: changeVoiceToSquirrel),
+      SoundModel(id: "male", name: "Male"),
+      SoundModel(id: "female", name: "Female"),
+      SoundModel(id: "robot", name: "Robot"),
+      SoundModel(id: "baby", name: "Baby"),
+      SoundModel(id: "monster", name: "Monster"),
+      SoundModel(id: "death", name: "Death"),
+      SoundModel(id: "cave", name: "Cave"),
+      SoundModel(id: "nervous", name: "Nervous"),
+      SoundModel(id: "squirrel", name: "Squirrel"),
+      SoundModel(id: "zombie", name: "Zombie"),
+      SoundModel(id: "duck", name: "Duck"),
+      SoundModel(id: "under_water", name: "Under Water"),
+      SoundModel(id: "telephone", name: "Telephone"),
     ];
 
     return Scaffold(
@@ -333,33 +157,48 @@ class _MyHomePageState extends State<MyHomePage> {
         backgroundColor: Theme.of(context).colorScheme.inversePrimary,
         title: Text(widget.title),
       ),
-      body: Center(
-        child: Column(
-          mainAxisAlignment: MainAxisAlignment.center,
-          children: <Widget>[
-            ElevatedButton(onPressed: () async {
-              // String path = await copyAssetToTemp("assets/audio/good-morning.mp3");
-              String path = await copyAssetToTemp("assets/audio/why-hello-there.mp3");
-              playAudio(path);
-            }, child: Text("Play audio")),
-            Expanded(
-              child: ListView.builder(
-                itemCount: sounds.length,
-                itemBuilder: (ctx, index) {
-                  return ElevatedButton(onPressed: () => processAndPlayVoice(voiceChangeFunc: sounds[index].voiceChangeFunc), child: Text(sounds[index].name));
-                },
-              ),
-            )
-          ],
-        ),
+      body: Stack(
+        children: [
+          Center(
+            child: Column(
+              mainAxisAlignment: MainAxisAlignment.center,
+              children: <Widget>[
+                ElevatedButton(onPressed: () async {
+                  // String path = await copyAssetToTemp("assets/audio/good-morning.mp3");
+                  String path = await copyAssetToTemp(assetPath);
+                  playAudio(path);
+                }, child: Text("Play audio")),
+                ElevatedButton(onPressed: () async {
+                  // String path = await copyAssetToTemp("assets/audio/good-morning.mp3");
+                  _player.pausePlayer();
+                }, child: Text("Pause audio")),
+                Expanded(
+                  child: ListView.builder(
+                    itemCount: sounds.length,
+                    itemBuilder: (ctx, index) {
+                      return ElevatedButton(onPressed: () => processAndPlayVoice(sounds[index]), child: Text(sounds[index].name));
+                    },
+                  ),
+                )
+              ],
+            ),
+          ),
+          if (_loading)
+          Positioned.fill(
+            child: Container(
+              color: Colors.black.withValues(alpha: 0.5),
+              child: Center(child: CircularProgressIndicator(color: Colors.white,)),
+            ),
+          )
+        ],
       ),
     );
   }
 }
 
 class SoundModel {
+  final String id;
   final String name;
-  final Function(String) voiceChangeFunc;
 
-  SoundModel({required this.name, required this.voiceChangeFunc});
+  SoundModel({required this.id, required this.name});
 }

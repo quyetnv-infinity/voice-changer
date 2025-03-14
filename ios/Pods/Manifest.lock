@@ -38,11 +38,11 @@ EXTERNAL SOURCES:
 
 SPEC CHECKSUMS:
   ffmpeg-kit-ios-full-gpl: 78f81da9b8c14f62f5013dd90f0c9c80bd720140
-  ffmpeg_kit_flutter_full_gpl: 8d15c14c0c3aba616fac04fe44b3d27d02e3c330
+  ffmpeg_kit_flutter_full_gpl: ce18b888487c05c46ed252cd2e7956812f2e3bd1
   Flutter: e0871f40cf51350855a761d2e70bf5af5b9b5de7
-  flutter_sound: 89eb78b7006e68714c29e16102a485b44097a4d5
+  flutter_sound: fabdc933a54acb3f9cf1b7ca946398743f0287e2
   flutter_sound_core: 50f98a00756d0853cc1e38336515f30e8577dff2
-  path_provider_foundation: 2b6b4c569c0fb62ec74538f866245ac84301af46
+  path_provider_foundation: 080d55be775b7414fd5a5ef3ac137b97b097e564
 
 PODFILE CHECKSUM: a57f30d18f102dd3ce366b1d62a55ecbef2158e5
 
